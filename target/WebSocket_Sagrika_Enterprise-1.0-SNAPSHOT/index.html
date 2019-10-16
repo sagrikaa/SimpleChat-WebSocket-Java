@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+     <script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+        <script>
+            function gotMessage(response){
+                var message = JSON.parse(response.data);
+                var messageDiv = document.createElement('div');
+                messageDiv.innerHTML= message.date + "- "+  message.author+'-' + message.text;
+                $('#chatDiv').append(messageDiv);
+            }
+            $(document).ready(function(){
+                var socket = new WebSocket("ws://localhost:8080/WebSocket_Sagrika_Enterprise/chat");
+                 socket.onmessage = gotMessage;
+                    
+                $('#submit').click(function(){
+                    
+                    var message = $('#message').val();
+                    var author = $('#author').val();
+                    var action = 'send';
+                    
+                    var messageobj = {acion:action,text:message,author:author};
+                    
+                    socket.send(JSON.stringify(messageobj));
+                    
+                    return false;
+                });
+                
+                
+                 $('#history').click(function(){
+                    
+                    var action = 'list';
+//                    
+                    var messageobj = {acion:action};
+                   
+                     socket.send(JSON.stringify(messageobj));
+                    
+                    return false;
+               
+            });
+            });
+            
+            
+           
+        </script>
+    </head>
+    <body>
+        <h1>Chat!</h1>
+        
+        <form>
+            <input type="text" id="message" placeholder="Message"/>
+            <input type="text" id="author" placeholder="Author"/>
+            <input type="submit" id="submit" value="Send Message"/>
+             <input type="submit" id="history" value="History"/>
+        </form>
+        
+        <div id="chatDiv">
+            
+            
+        </div>
+    </body>
+</html>
